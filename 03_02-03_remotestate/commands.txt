@@ -1,1 +1,0 @@
-terraform init -backend-config="bucket=red30-tfstate" -backend-config="key=red30/ecommerceapp/app.state"  -backend-config="region=sa-east-1"  -backend-config="dynamodb_table=red30-tfstatelock"    -backend-config="access_key=AKIAZC6HRJOZJBOIH54F"   -backend-config="secret_key=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"
