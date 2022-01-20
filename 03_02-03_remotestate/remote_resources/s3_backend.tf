@@ -5,8 +5,10 @@ variable "aws_access_key" {}
 
 variable "aws_secret_key" {}
 
+variable "region" {}
+
 variable "bucket_name" {
-  default = "red30-tfstate"
+  default = "bkt-terraform-tfstate"
 }
 
 # //////////////////////////////
@@ -15,14 +17,14 @@ variable "bucket_name" {
 provider "aws" {
   access_key = var.aws_access_key
   secret_key = var.aws_secret_key
-  region = "us-east-2"
+  region = var.region
 }
 
 # //////////////////////////////
 # TERRAFORM USER
 # //////////////////////////////
 data "aws_iam_user" "terraform" {
-  user_name = "terraform"
+  user_name = "terraform_user"
 }
 
 # //////////////////////////////

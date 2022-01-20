@@ -6,7 +6,7 @@ variable "aws_access_key" {}
 variable "aws_secret_key" {}
 
 variable "region" {
-  default = "us-east-2"
+  default = "sa-east-1"
 }
 
 variable "vpc_cidr" {
@@ -22,6 +22,10 @@ variable "environment_list" {
   default = ["DEV","QA","STAGE","PROD"]
 }
 
+variable "deploy_environment" {
+  type = string
+  default = "DEV"
+}
 variable "environment_map" {
   type = map(string)
   default = {
@@ -54,11 +58,11 @@ variable "environment_instance_settings" {
       monitoring = false
     },
     "STAGE" = {
-      instance_type = "t2.micro", 
+      instance_type = "t3.micro", 
       monitoring = false
     },
     "PROD" = {
-      instance_type = "t2.micro", 
+      instance_type = "t3.micro", 
       monitoring = true
     }
   }
@@ -141,14 +145,14 @@ resource "aws_security_group" "sg-nodejs-instance" {
 # INSTANCE
 resource "aws_instance" "nodejs1" {
   ami = data.aws_ami.aws-linux.id
-  instance_type = var.environment_instance_type["DEV"]
-  //instance_type = var.environment_instance_settings["PROD"].instance_type
+  //instance_type = var.environment_instance_type[var.depoy_environment]
+  instance_type = var.environment_instance_settings[var.deploy_environment].instance_type
   subnet_id = aws_subnet.subnet1.id
   vpc_security_group_ids = [aws_security_group.sg-nodejs-instance.id]
 
-  monitoring = var.environment_instance_settings["PROD"].monitoring
+  monitoring = var.environment_instance_settings[var.deploy_environment].monitoring
 
-  tags = {Environment = var.environment_list[0]}
+  tags = {Environment = var.environment_map[var.deploy_environment]}
 
 }
 
@@ -186,4 +190,8 @@ output "instance-dns" {
 
 output "private-dns" {
   value = aws_instance.nodejs1.private_dns
+}
+
+output "public_IP" {
+  value = aws_internet_gateway.gateway1
 }
